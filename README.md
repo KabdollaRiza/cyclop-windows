@@ -21,11 +21,13 @@ data formats follow the original.
 2. Double-click it. The first time, Windows shows *"Windows protected your
    PC"*: the app is not signed with a paid certificate, which is all that
    warning means. Click **More info → Run anyway**. It asks only once.
-3. Nothing opens as a window. Look at the top centre of the screen: a thin
-   black bar. Hover it and the panel unfolds. The eye icon in the system tray
-   (by the clock, possibly under the **^** arrow) holds the menu.
+3. The panel unfolds at the top centre of the screen. Cyclop has no ordinary
+   window: when you move away, the panel folds into a thin black bar, and
+   hovering the bar brings it back. The eye icon in the system tray (by the
+   clock, possibly under the **^** arrow) holds the menu.
 4. To start Cyclop with Windows, right-click the tray icon → **Launch at
-   login**.
+   login**. Started that way it stays folded; opening `Cyclop.exe` again at
+   any time — while it runs — just unfolds the panel.
 
 To update, quit Cyclop from the tray menu and replace the file with the new
 one. All releases are on the [releases page](https://github.com/KabdollaRiza/cyclop-windows/releases).

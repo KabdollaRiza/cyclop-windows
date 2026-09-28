@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Threading;
 using Cyclop.Stores;
 
 namespace Cyclop;
@@ -10,14 +11,34 @@ public partial class App : Application
     PanelWindow? panel;
     NoteStore? notes;
     ScreenshotCatcher? catcher;
+    EventWaitHandle? showSignal;
+    RegisteredWaitHandle? showWait;
+
+    /// Set by the running copy's listener; raised by a second launch.
+    const string ShowSignalName = @"Local\Cyclop.Show";
+
+    /// Passed by the autostart entry. Signing in should bring the bar up
+    /// quietly; every other launch — the shortcut, the exe — is someone asking
+    /// to see Cyclop, and gets the panel.
+    public const string BackgroundArgument = "--background";
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        bool background = e.Args.Contains(BackgroundArgument);
+
         // One Cyclop per session: a second one would draw a second panel over
-        // the first and record every copy twice.
+        // the first and record every copy twice. A second launch is still
+        // somebody asking to see the panel, so it asks the running copy to
+        // show it before stepping aside — otherwise the shortcut would seem
+        // to do nothing at all.
         single = new Mutex(true, @"Local\Cyclop", out bool first);
         if (!first)
         {
+            if (!background && EventWaitHandle.TryOpenExisting(ShowSignalName, out var signal))
+            {
+                signal.Set();
+                signal.Dispose();
+            }
             Shutdown();
             return;
         }
@@ -49,6 +70,12 @@ public partial class App : Application
         if (settings.CatchScreenshots) catcher.Start();
 
         panel.Show();
+        showSignal = new EventWaitHandle(false, EventResetMode.AutoReset, ShowSignalName);
+        showWait = ThreadPool.RegisterWaitForSingleObject(showSignal,
+            (_, _) => Dispatcher.BeginInvoke(() => panel.Reveal()), null, Timeout.Infinite, executeOnlyOnce: false);
+        if (!background)
+            Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(panel.Reveal));
+
         tray = new Tray(panel.Toggle, Quit, settings.CatchScreenshots, on =>
         {
             settings.CatchScreenshots = on;
@@ -66,6 +93,8 @@ public partial class App : Application
     {
         notes?.Flush();
         catcher?.Dispose();
+        showWait?.Unregister(null);
+        showSignal?.Dispose();
         tray?.Dispose();
         single?.Dispose();
         base.OnExit(e);

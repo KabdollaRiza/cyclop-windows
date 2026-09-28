@@ -125,15 +125,24 @@ public partial class PanelWindow : Window
     public void Toggle()
     {
         if (isOpen)
-        {
             Collapse();
-            return;
+        else
+            Reveal();
+    }
+
+    /// Opens the panel without a hover — from the tray, or from launching the
+    /// app. It did not arrive under the pointer, so it stays open until the
+    /// pointer has been inside and left again.
+    public void Reveal()
+    {
+        if (!isOpen)
+        {
+            Native.GetCursorPos(out var p);
+            // The panel goes to the display the pointer is on, which is the
+            // one being looked at — not the one the tray or the shortcut is on.
+            Place(Native.MonitorFromPoint(p, Native.MONITOR_DEFAULTTONEAREST));
+            Open();
         }
-        Native.GetCursorPos(out var p);
-        // The tray sits on some display; the panel goes to the one the pointer
-        // is on, which is the one being looked at.
-        Place(Native.MonitorFromPoint(p, Native.MONITOR_DEFAULTTONEAREST));
-        Open();
         pinned = true;
     }
 

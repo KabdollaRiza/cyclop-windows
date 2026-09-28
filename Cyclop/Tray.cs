@@ -31,6 +31,10 @@ sealed class Tray : IDisposable
     {
         image = DrawIcon();
 
+        // An entry written before the flag existed would pop the panel open at
+        // every sign-in; brought up to date once, the first time it is seen.
+        if (LaunchesAtLogin && !AutostartIsQuiet) SetLaunchAtLogin(true);
+
         var launchAtLogin = new ToolStripMenuItem("Launch at login") { Checked = LaunchesAtLogin, CheckOnClick = true };
         launchAtLogin.CheckedChanged += (_, _) => SetLaunchAtLogin(launchAtLogin.Checked);
 
@@ -73,11 +77,20 @@ sealed class Tray : IDisposable
         }
     }
 
+    static bool AutostartIsQuiet
+    {
+        get
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(RunKey);
+            return key?.GetValue(RunValue) is string command && command.Contains(App.BackgroundArgument);
+        }
+    }
+
     static void SetLaunchAtLogin(bool on)
     {
         using var key = Registry.CurrentUser.CreateSubKey(RunKey);
         if (on)
-            key.SetValue(RunValue, $"\"{Environment.ProcessPath}\"");
+            key.SetValue(RunValue, $"\"{Environment.ProcessPath}\" {App.BackgroundArgument}");
         else
             key.DeleteValue(RunValue, throwOnMissingValue: false);
     }
