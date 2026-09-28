@@ -1,0 +1,93 @@
+<UserControl x:Class="Cyclop.Panes.SnippetsPane"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Margin="0,0,0,6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="Search" Style="{StaticResource Field}" Tag="Search snippets"
+                     Text="{Binding Query, UpdateSourceTrigger=PropertyChanged}" />
+            <Button Grid.Column="1" Style="{StaticResource IconButton}" Content="&#xE710;" Margin="6,0,0,0"
+                    Click="New_Click" ToolTip="Add a snippet" />
+            <Button Grid.Column="2" Style="{StaticResource IconButton}" Content="&#xE838;"
+                    Click="Reveal_Click" ToolTip="Show snippets.json" />
+        </Grid>
+
+        <Border Grid.Row="1" Background="{StaticResource Warning}" CornerRadius="8" Padding="10,6" Margin="0,0,0,6"
+                Visibility="{Binding FileBroken, Converter={StaticResource Visible}}">
+            <TextBlock TextWrapping="Wrap"
+                       Text="snippets.json cannot be read — fix it in an editor. Nothing is written to it until then." />
+        </Border>
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Hidden">
+            <ItemsControl x:Name="List" ItemsSource="{Binding View}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border x:Name="Row" Background="Transparent" CornerRadius="8" Padding="8,5" Margin="0,0,0,1"
+                                MouseLeftButtonUp="Row_Click" ToolTip="Click to copy">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock FontFamily="{StaticResource IconFont}" Text="{Binding Glyph}"
+                                           Foreground="{StaticResource Secondary}" VerticalAlignment="Center"
+                                           Margin="0,0,10,0" />
+                                <TextBlock Grid.Column="1" Text="{Binding Label}" FontWeight="SemiBold"
+                                           VerticalAlignment="Center" Margin="0,0,8,0" MaxWidth="160"
+                                           TextTrimming="CharacterEllipsis"
+                                           Visibility="{Binding HasLabel, Converter={StaticResource Visible}}" />
+                                <TextBlock Grid.Column="2" Text="{Binding Preview}" TextTrimming="CharacterEllipsis"
+                                           Foreground="{StaticResource Secondary}" VerticalAlignment="Center" />
+                                <Button x:Name="Remove" Grid.Column="3" Style="{StaticResource IconButton}"
+                                        Width="20" Height="20" FontSize="9" Content="&#xE711;" Opacity="0"
+                                        Click="Remove_Click" ToolTip="Delete" />
+                            </Grid>
+                        </Border>
+                        <DataTemplate.Triggers>
+                            <Trigger SourceName="Row" Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Row" Property="Background" Value="{StaticResource Surface}" />
+                                <Setter TargetName="Remove" Property="Opacity" Value="1" />
+                            </Trigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <TextBlock x:Name="Empty" Grid.Row="2" Style="{StaticResource Hint}"
+                   Text="What you are tired of retyping: an address, a phone, an email.&#x0a;Add one with +, or edit snippets.json by hand." />
+
+        <!-- The add form covers the list rather than pushing it down. -->
+        <Border x:Name="Form" Grid.Row="0" Grid.RowSpan="3" Background="Black" Visibility="Collapsed">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBox x:Name="NewLabel" Style="{StaticResource Field}" Tag="Name (optional)" Margin="0,0,0,6" />
+                <TextBox x:Name="NewText" Grid.Row="1" Style="{StaticResource Field}" Tag="Text to paste"
+                         AcceptsReturn="True" TextWrapping="Wrap" VerticalContentAlignment="Top"
+                         VerticalScrollBarVisibility="Hidden" />
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,6,0,0">
+                    <Button Style="{StaticResource Flat}" Foreground="{StaticResource Secondary}" Content="Cancel"
+                            Click="Cancel_Click" />
+                    <Button Style="{StaticResource Flat}" Background="{StaticResource Accent}" Content="Add"
+                            Click="Add_Click" Margin="6,0,0,0" Padding="14,4" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
