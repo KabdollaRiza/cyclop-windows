@@ -1,0 +1,62 @@
+<Window x:Class="Cyclop.PanelWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:panes="clr-namespace:Cyclop.Panes"
+        Title="Cyclop"
+        Width="700" Height="252"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" ShowInTaskbar="False" ShowActivated="False" Topmost="True"
+        Foreground="White" FontFamily="Segoe UI Variable Text, Segoe UI" FontSize="12"
+        UseLayoutRounding="True">
+    <!-- The window never changes its frame: it is always the size of the open
+         panel plus room for the shadow, and only the content animates. Outside
+         the visible panel it is transparent to the mouse (WS_EX_TRANSPARENT). -->
+    <Border x:Name="Shell" Width="180" Height="8" AllowDrop="True"
+            HorizontalAlignment="Center" VerticalAlignment="Top"
+            Background="Black" CornerRadius="0,0,4,4" ClipToBounds="True">
+        <Border.Effect>
+            <DropShadowEffect x:Name="Shadow" BlurRadius="28" ShadowDepth="6" Direction="270" Opacity="0" />
+        </Border.Effect>
+
+        <Grid x:Name="Body" Width="620" Height="208" Opacity="0" IsHitTestVisible="False"
+              HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0">
+            <Grid Margin="12,8,18,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="26" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Top" Margin="0,4,0,0">
+                    <RadioButton x:Name="ShelfTab" Style="{StaticResource RailTab}" Content="&#xE7B8;"
+                                 ToolTip="Shelf" IsChecked="True" />
+                    <RadioButton x:Name="MusicTab" Style="{StaticResource RailTab}" Content="&#xE8D6;"
+                                 ToolTip="Music" />
+                    <RadioButton x:Name="ClipboardTab" Style="{StaticResource RailTab}" Content="&#xE77F;"
+                                 ToolTip="Clipboard" />
+                    <RadioButton x:Name="SnippetsTab" Style="{StaticResource RailTab}" Content="&#xE8FD;"
+                                 ToolTip="Snippets" />
+                    <RadioButton x:Name="NotesTab" Style="{StaticResource RailTab}" Content="&#xE70B;"
+                                 ToolTip="Notes" />
+                </StackPanel>
+
+                <TextBlock x:Name="Heading" Grid.Column="2" Text="Shelf" FontWeight="SemiBold" FontSize="13"
+                           VerticalAlignment="Center" />
+                <TextBlock x:Name="Toast" Grid.Column="2" Text="Copied" Foreground="{StaticResource Secondary}"
+                           HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0" />
+
+                <Grid Grid.Row="1" Grid.Column="2" Margin="0,4,0,0">
+                    <panes:ShelfPane x:Name="ShelfPane" />
+                    <panes:MediaPane x:Name="MediaPane" Visibility="Collapsed" />
+                    <panes:ClipboardPane x:Name="ClipboardPane" Visibility="Collapsed" />
+                    <panes:SnippetsPane x:Name="SnippetsPane" Visibility="Collapsed" />
+                    <panes:NotesPane x:Name="NotesPane" Visibility="Collapsed" />
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
