@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- The Windows SDK projection is here for the media session API (Music tab);
+         1809 is the first release that has it. -->
+    <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <UseWPF>true</UseWPF>
+    <!-- Only for the tray icon: WPF has no NotifyIcon of its own. -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>Cyclop</AssemblyName>
+    <RootNamespace>Cyclop</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- WinForms wants DPI set through its own API; this is a WPF app, and the
+         manifest is where WPF reads it. -->
+    <NoWarn>$(NoWarn);WFO0003</NoWarn>
+    <!-- The version lives in one place: the version file at the repository root. -->
+    <Version>$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)..\version')), 'VERSION=([0-9.]+)').Groups[1].Value)</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- WinForms is here for NotifyIcon alone; its global usings would make
+         Color, Point, Clipboard and friends ambiguous against WPF's. -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+</Project>
