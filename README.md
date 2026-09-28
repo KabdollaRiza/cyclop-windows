@@ -10,6 +10,26 @@ The code here is a rewrite in C# and WPF — the Mac app is built on AppKit and
 SwiftUI, which Windows does not have — but the behaviour, the design and the
 data formats follow the original.
 
+## Download
+
+**[Download Cyclop.exe](https://github.com/KabdollaRiza/cyclop-windows/releases/latest/download/Cyclop.exe)**
+— Windows 10 (1809 or newer) or 11, 64-bit. One file, nothing to install:
+.NET is built in.
+
+1. Put `Cyclop.exe` somewhere it can stay, for example in
+   `C:\Users\<you>\AppData\Local\Programs\Cyclop\` or in `Documents`.
+2. Double-click it. The first time, Windows shows *"Windows protected your
+   PC"*: the app is not signed with a paid certificate, which is all that
+   warning means. Click **More info → Run anyway**. It asks only once.
+3. Nothing opens as a window. Look at the top centre of the screen: a thin
+   black bar. Hover it and the panel unfolds. The eye icon in the system tray
+   (by the clock, possibly under the **^** arrow) holds the menu.
+4. To start Cyclop with Windows, right-click the tray icon → **Launch at
+   login**.
+
+To update, quit Cyclop from the tray menu and replace the file with the new
+one. All releases are on the [releases page](https://github.com/KabdollaRiza/cyclop-windows/releases).
+
 ## What is ported
 
 | Tab | Status |
@@ -73,8 +93,8 @@ A single `.exe` to hand to someone else:
 # (most of it is the Windows API projection the Music tab needs)
 dotnet publish -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true
 
-# runs anywhere, no runtime needed, ~70 MB
-dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
+# runs anywhere, no runtime needed, ~80 MB — how release builds are made
+dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true
 ```
 
 The output is in `bin\Release\net9.0-windows10.0.19041.0\win-x64\publish\`.
